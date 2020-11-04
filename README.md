@@ -6,4 +6,3 @@ Autorzy:
 * Aleksander Nagaj
 * Jan Nęciński
 
-chuj 
