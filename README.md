@@ -6,4 +6,4 @@ Autorzy:
 * Aleksander Nagaj
 * Jan Nęciński
 
-chuj
+chuj i kropka
