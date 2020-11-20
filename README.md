@@ -8,7 +8,7 @@ Autorzy:
 
 Food resources:  
 * T_n nauka poza zajeciami  
-    > u_i = 60; l_i = 60;
+    > u_i = 60; l_i = 0;
 * T_s czas nieobowiazkowych wykladow
     > u_i = 9; l_i = 0;
 * T_w czas wolny
