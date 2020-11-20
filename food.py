@@ -7,3 +7,4 @@ class Food:
         self.u_i: int = u_i
         self.l_i: int = l_i
         self.vect: np.array = np.arange(u_i, dtype=int)
+        self.x: int
