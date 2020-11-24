@@ -63,3 +63,47 @@ class BaseGraduaterBee(ABC):
         self.trial = BaseGraduaterBee.TRIAL_INITIAL_DEFAULT_VALUE
         self.prob = BaseGraduaterBee.TRIAL_INITIAL_DEFAULT_VALUE
 
+
+class EmployeeGraduaterBee(BaseGraduaterBee):
+    '''Employee bee model, searches for food in the vicinity of current food source'''
+
+    def explore(self, max_trials):
+        '''Explores surroundings of current position in search of food'''
+        if self.trial <= max_trials:
+            component = np.random.choice(self.pos)
+            phi = np.random.uniform(low=-1, high=1, size=len(self.pos))
+            n_pos = self.pos + (self.pos - component) * phi
+            n_pos = self.evaluate_boundaries(n_pos)
+            n_fitness = self.obj_function.evaluate(n_pos)
+            self.update_bee(n_pos, n_fitness)
+
+    def get_fitness(self):
+        #TODO: reimplement?
+        return 1 / (1+self.fitness) if self.fitness >= 0 else 1 + np.abs(self.fitness)
+    
+    def compute_prob(self, max_fitness):
+        self.prob = self.get_fitness() / max_fitness
+
+
+class OnlookerGradueterBee(BaseGraduaterBee):
+    '''Onlooker bee model, looks through the best employees and tries to improve that food source'''
+
+    def onlook(self, best_food_sources, max_trials):
+        '''Look for better source in the vicinity of current best'''
+        candidate = np.random.choice(best_food_sources)
+        self.__exploit(candidate.pos, candidate.fitness, max_trials)
+
+    def __exploit(self, candidate, fitness, max_trials):
+        if self.trial <= max_trials:
+            component = np.random.choice(candidate)
+            phi = np.random.uniform(low=-1, high=-1, size=len(candidate))
+            n_pos = candidate + (candidate - component) * phi
+            n_pos = self.evaluate_boundaries(n_pos)
+            n_fitness = self.obj_function.evaluate(n_pos)
+
+            if n_fitness >= fitness:
+                self.pos = n_pos
+                self.fitness = n_fitness
+                self.trial = 0
+            else:
+                self.trial += 1
