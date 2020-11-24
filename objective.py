@@ -14,11 +14,12 @@ class ObjectiveFunction(ABC):
         maxf (float): maximum value
     '''
 
-    def __init__(self, name, dim, minf, maxf):
+    def __init__(self, name, dim, minf, maxf, maxl):
         self.name = name
         self.dim = dim
         self.minf = minf
         self.maxf = maxf
+        self.maxl = maxl
 
     def sample(self):
         '''
@@ -47,8 +48,9 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
     Inherits from objective function
     '''
 
-    MINF = 3.0
-    MAXF = 5.0
+    MINF = 0
+    MAXF = 60
+    MAXL = 9
     TS_LAB = 11.5 #h
     TD = 96 #h
     SALARY = 25 #PLN/h
@@ -60,11 +62,12 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
             'TermGraduaterObjectiveFunction',
             dim,
             TermGraduaterObjectiveFunction.MINF,
-            TermGraduaterObjectiveFunction.MAXF)
+            TermGraduaterObjectiveFunction.MAXF,
+            TermGraduaterObjectiveFunction.MAXL)
 
         self.missed_lec = 0
 
-    def _free_time(self, x: np.array):
+    def free_time(self, x: np.array):
         '''
         Returns:
             float: remaining free time
@@ -140,7 +143,8 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
         Returns:
             Objective function value
         '''
-        return self.avg_coeff*self._avg(x)+self._free_time(x)+self.salary_coeff*x[2]
+
+        return self.avg_coeff*self._avg(x)+self.free_time(x)+self.salary_coeff*x[2]*MaximumAverageObjective.SALARY
 
     # coeB = 'jakas liczba'
     # coeA = 'jakas liczba'
