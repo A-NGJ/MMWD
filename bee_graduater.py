@@ -34,8 +34,7 @@ class BaseGraduaterBee(ABC):
             pos[pos < self.minf] = self.minf
         if pos[1] > self.maxl:
             pos[1] = self.maxl
-        maxw = min(2*pos[2], self.obj_function.free_time(pos))
-        if maxw > pos[3]:
+        if maxw:= min(2*pos[2], self.obj_function.free_time(pos))> pos[3]:
             pos[3] = maxw
         return pos
 
