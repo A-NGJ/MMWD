@@ -81,7 +81,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: satisfaction coefficient
         '''
-        return (self._free_time(x) + 3*x[3])*alpha
+        return (self.free_time(x) + 3*x[3])*alpha
 
     def _study_reward(self, x: np.array, alpha=0.1429):
         '''
@@ -116,7 +116,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: maximum possible sary
         """
-        return self._free_time(x)*TermGraduaterObjectiveFunction.SALARY
+        return self.free_time(x)*TermGraduaterObjectiveFunction.SALARY
 
     @abstractmethod
     def evaluate(self, x):

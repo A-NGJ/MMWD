@@ -107,3 +107,4 @@ class OnlookerGradueterBee(BaseGraduaterBee):
                 self.trial = 0
             else:
                 self.trial += 1
+
