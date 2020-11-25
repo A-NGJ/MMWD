@@ -5,6 +5,7 @@ Projekt na zaliczenie zajęć z Matematycznych Metod Wspomagania Decyzji.
 Autorzy:
 * Aleksander Nagaj
 * Jan Nęciński
+* Przemysław Myśliwiec
 
 Food resources:  
 * T_n nauka poza zajeciami  
