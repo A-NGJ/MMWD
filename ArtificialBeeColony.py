@@ -1,7 +1,8 @@
 from copy import deepcopy
 import numpy as np
 
-from bee_graduater import EmployeeGraduaterBee, OnlookerGradueterBee
+from BeeGraduater import EmployeeGraduaterBee, OnlookerGradueterBee
+from Objective import MaximumAverageObjective
 
 
 class ABC(object):
@@ -25,47 +26,47 @@ class ABC(object):
 
     def __update_optimal_solution(self):
         n_optimal_solution = \
-            min(self.onlokeer_bees + self.employee_bees,
+            max(self.onlokeer_bees + self.employee_bees,
                 key=lambda bee: bee.fitness)
         if not self.optimal_solution:
             self.optimal_solution = deepcopy(n_optimal_solution)
         else:
-            if n_optimal_solution.fitness < self.optimal_solution.fitness:
+            if n_optimal_solution.fitness > self.optimal_solution.fitness:
                 self.optimal_solution = deepcopy(n_optimal_solution)
 
     def __initialize_employees(self):
         self.employee_bees = []
-        for itr in range(self.colony_size // 2):
+        for _ in range(self.colony_size // 2):
             self.employee_bees.append(EmployeeGraduaterBee(self.obj_function))
 
     def __initialize_onlookers(self):
         self.onlokeer_bees = []
-        for itr in range(self.colony_size // 2):
+        for _ in range(self.colony_size // 2):
             self.onlokeer_bees.append(OnlookerGradueterBee(self.obj_function))
 
     def __employee_bees_phase(self):
-        map(lambda bee: bee.explore(self.max_trials), self.employee_bees)
+        list(map(lambda bee: bee.explore(self.max_trials), self.employee_bees))
 
     def __calculate_probabilities(self):
         sum_fitness = sum(map(lambda bee: bee.get_fitness(), self.employee_bees))
-        map(lambda bee: bee.compute_prob(sum_fitness), self.employee_bees)
+        list(map(lambda bee: bee.compute_prob(sum_fitness), self.employee_bees))
 
     def __select_best_food_sources(self):
         self.best_food_sources =\
-            filter(lambda bee: bee.prob > np.random.uniform(low=0, high=1),
-                   self.employee_bees)
+            list(filter(lambda bee: bee.prob > np.random.uniform(low=0, high=1),
+                   self.employee_bees))
         while not self.best_food_sources:
             self.best_food_sources = \
-                filter(lambda bee: bee.prob > np.random.uniform(low=0, high=1),
-                       self.employee_bees)
+                list(filter(lambda bee: bee.prob > np.random.uniform(low=0, high=1),
+                       self.employee_bees))
 
     def __onlooker_bees_phase(self):
-        map(lambda bee: bee.onlook(self.best_food_sources, self.max_trials),
-            self.onlokeer_bees)
+        list(map(lambda bee: bee.onlook(self.best_food_sources, self.max_trials),
+            self.onlokeer_bees))
 
     def __scout_bees_phase(self):
-        map(lambda bee: bee.reset_bee(self.max_trials),
-            self.onlokeer_bees + self.employee_bees)
+        list(map(lambda bee: bee.reset_bee(self.max_trials),
+            self.onlokeer_bees + self.employee_bees))
 
     def optimize(self):
         self.__reset_algorithm()
@@ -83,5 +84,6 @@ class ABC(object):
 
             self.__update_optimal_solution()
             self.__update_optimality_tracking()
+            print(self.optimal_solution.pos)
             print("iter: {} = cost: {}"
                   .format(itr, "%04.03e" % self.optimal_solution.fitness))

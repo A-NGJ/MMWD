@@ -55,7 +55,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
     TD = 96 #h
     SALARY = 25 #PLN/h
     PARTY_COST = -12.5 #PLN/h
-    MIN_INCOME = 500 #PLM
+    MIN_INCOME = 500 #PLN
 
     def __init__(self, dim):
         super().__init__(
@@ -107,7 +107,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
             float: grade average. MINF < average < MAXF
         """
         return TermGraduaterObjectiveFunction.MINF \
-            + self._missed_lec_penalty(x)\
+            + self._missed_lec_penalty()\
             + self._study_reward(x)
 
 
@@ -132,7 +132,7 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
         self.avg_coeff = avg_coeff
         self.salary_coeff = salary_coeff
 
-    def evaluate(self, x):
+    def evaluate(self, x) -> float:
         '''
         Args:
             x (np.array): position vector:
