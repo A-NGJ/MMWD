@@ -1,0 +1,22 @@
+{
+  "objective_params":
+  {
+    "minf": 0,
+    "maxf": 60,
+    "maxl": 9,
+    "ts_lab": 11.5,
+    "td": 96,
+    "salary": 25,
+    "party_cost": -12.5,
+    "min_income": 500,
+    "avg_coeff": 1,
+    "salary_coeff": 1
+  },
+  "simulation_params":
+  {
+    "colony_size": 4,
+    "n_iter": 5000,
+    "max_trials": 100,
+    "simulations": 1
+  }
+}

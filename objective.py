@@ -48,23 +48,14 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
     Inherits from objective function
     '''
 
-    MINF = 0
-    MAXF = 60
-    MAXL = 9
-    TS_LAB = 11.5 #h
-    TD = 96 #h
-    SALARY = 25 #PLN/h
-    PARTY_COST = -12.5 #PLN/h
-    MIN_INCOME = 500 #PLN
-
-    def __init__(self, dim):
+    def __init__(self, dim, *, minf, maxf, maxl, ts_lab, td, salary, party_cost, min_income):
         super().__init__(
             'TermGraduaterObjectiveFunction',
-            dim,
-            TermGraduaterObjectiveFunction.MINF,
-            TermGraduaterObjectiveFunction.MAXF,
-            TermGraduaterObjectiveFunction.MAXL)
+            dim, minf, maxf, maxl)
 
+        self.td = td
+        self.ts_lab = ts_lab
+        self.salary = salary
         self.missed_lec = 0
 
     def free_time(self, x: np.array):
@@ -72,9 +63,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: remaining free time
         '''
-        return TermGraduaterObjectiveFunction.TD\
-            -(x[1]+TermGraduaterObjectiveFunction.TS_LAB)\
-            -x[0]-x[2]-x[3]
+        return self.td-(x[1]+self.ts_lab)-x[0]-x[2]-x[3]
 
     def _satisfaction_coeff(self, x: np.array, alpha=0.008):
         '''
@@ -106,9 +95,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: grade average. MINF < average < MAXF
         """
-        return TermGraduaterObjectiveFunction.MINF \
-            + self._missed_lec_penalty()\
-            + self._study_reward(x)
+        return self.minf+self._missed_lec_penalty()+self._study_reward(x)
 
 
     def _max_salary(self, x: np.array):
@@ -116,7 +103,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: maximum possible sary
         """
-        return self.free_time(x)*TermGraduaterObjectiveFunction.SALARY
+        return self.free_time(x)*self.salary
 
     @abstractmethod
     def evaluate(self, x):
@@ -126,8 +113,12 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
 class MaximumAverageObjective(TermGraduaterObjectiveFunction):
     '''Maximum average objective function'''
 
-    def __init__(self, dim, *, avg_coeff, salary_coeff):
-        super().__init__(dim)
+    def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5, 
+                 td=96, salary=25, party_cost=-12.5, min_income=500,
+                 avg_coeff=1, salary_coeff=1):
+        super().__init__(dim, minf=minf, maxf=maxf, maxl=maxl,
+                         ts_lab=ts_lab, td=td, salary=salary,
+                         party_cost=party_cost, min_income=min_income)
         self.name = 'MaximumAverageObjective'
         self.avg_coeff = avg_coeff
         self.salary_coeff = salary_coeff
@@ -144,7 +135,7 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
             Objective function value
         '''
 
-        return self.avg_coeff*self._avg(x)+self.free_time(x)+self.salary_coeff*x[2]*MaximumAverageObjective.SALARY
+        return self.avg_coeff*self._avg(x)+self.free_time(x)+self.salary_coeff*x[2]*self.salary
 
     # coeB = 'jakas liczba'
     # coeA = 'jakas liczba'

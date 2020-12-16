@@ -1,29 +1,26 @@
+import argparse
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+import pprint
+
 from ArtificialBeeColony import ABC
 from Objective import MaximumAverageObjective
 
-import argparse
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-
-from collections import namedtuple
-
 def read_data(data_file):
-    Coeff = namedtuple('Coeff', ['avg', 'salary'])
     try:
-        data = pd.read_csv(data_file, header=None)
-        print(data)
-        values = data.iloc[:, :].values
-        print(values)
-        return Coeff(values[0][0], values[0][1])
+        with open(data_file, "r") as df:
+            data = json.load(df)
+            pprint.pprint(data)
+            return data
     except EnvironmentError as err:
         print(err)
 
-def simulate(obj_function, parameters, colony_size=30, n_iter=5000, max_trials=100, simulations=30):
+def simulate(obj_function, obj_function_params, colony_size=30, n_iter=5000, max_trials=100, simulations=30):
     values = np.zeros(n_iter)
     for _ in range(simulations):
         optimizer = ABC(
-            obj_function(4, avg_coeff=parameters.avg, salary_coeff=parameters.salary),
+            obj_function(4, **obj_function_params),
             colony_size=colony_size,
             n_iter=n_iter,
             max_trials=max_trials
@@ -38,11 +35,11 @@ def simulate(obj_function, parameters, colony_size=30, n_iter=5000, max_trials=1
 def main(parser_args):
     params = read_data(parser_args.file)
     plt.figure(figsize=(10, 7))
-    simulate(MaximumAverageObjective, params, simulations=1, n_iter=100)
+    simulate(MaximumAverageObjective, params['objective_params'], **params['simulation_params'])
     plt.show()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('file', help='File with csv data')
+    parser.add_argument('file', help='Json file with initial params')
     args = parser.parse_args()
     main(args)
