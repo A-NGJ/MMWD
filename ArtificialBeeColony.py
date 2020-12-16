@@ -31,7 +31,7 @@ class ABC(object):
         if not self.optimal_solution:
             self.optimal_solution = deepcopy(n_optimal_solution)
         else:
-            if n_optimal_solution.fitness > self.optimal_solution.fitness:
+            if n_optimal_solution.fitness > self.optimal_solution.fitness and sum(n_optimal_solution.pos) < self.obj_function.td:
                 self.optimal_solution = deepcopy(n_optimal_solution)
 
     def __initialize_employees(self):

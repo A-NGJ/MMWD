@@ -29,7 +29,7 @@ def simulate(obj_function, obj_function_params, colony_size=30, n_iter=5000, max
         values += np.array(optimizer.optimality_tracking)
     values /= simulations
 
-    plt.plot(np.linspace(0, n_iter-1, num=n_iter), values, lw=0.5, label='overall', color='b')
+    plt.plot(np.linspace(0, n_iter-1, num=n_iter, dtype=int), values, lw=0.5, label='overall', color='b')
     plt.legend(loc='upper right')
 
 def main(parser_args):

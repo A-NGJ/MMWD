@@ -14,12 +14,24 @@ class ObjectiveFunction(ABC):
         maxf (float): maximum value
     '''
 
-    def __init__(self, name, dim, minf, maxf, maxl):
+    def __init__(self, name, dim, minf, maxf, maxl, td):
         self.name = name
         self.dim = dim
         self.minf = minf
         self.maxf = maxf
         self.maxl = maxl
+        self.td = td
+
+    def __evaluate_sample(self, x):
+        if x[0] > 60:
+            return False
+        if x[1] > 9:
+            return False
+        if x[2] > 60:
+            return False
+        if x[3] > 60:
+            return False
+        return True
 
     def sample(self):
         '''
@@ -33,9 +45,12 @@ class ObjectiveFunction(ABC):
         Returns:
             np.array: sample values calculated using custom method.
         '''
-        return np.repeat(self.minf, repeats=self.dim) \
-            + np.random.uniform(low=0, high=1, size=self.dim) *\
-            np.repeat(self.maxf-self.minf, repeats=self.dim)
+        while True:
+            sample = np.repeat(self.minf, repeats=self.dim) \
+                + np.random.uniform(low=0, high=1, size=self.dim) *\
+                np.repeat(self.maxf-self.minf, repeats=self.dim)
+            if sum(sample) < 96 and self.__evaluate_sample(sample):
+                return sample
 
     @abstractmethod
     def evaluate(self, x):
@@ -51,12 +66,11 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
     def __init__(self, dim, *, minf, maxf, maxl, ts_lab, td, salary, party_cost, min_income):
         super().__init__(
             'TermGraduaterObjectiveFunction',
-            dim, minf, maxf, maxl)
+            dim, minf, maxf, maxl, td)
 
         self.td = td
         self.ts_lab = ts_lab
         self.salary = salary
-        self.missed_lec = 0
 
     def free_time(self, x: np.array):
         '''
@@ -81,22 +95,21 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         '''
         return alpha*(0.5*self._satisfaction_coeff(x))
 
-    def _missed_lec_penalty(self, alpha=-0.083):
+    def _missed_lec_penalty(self, x: np.array, alpha=-0.083):
         '''
         Args:
             alpha=-0.083 (float): missed lecture penalty coefficient
         Returns:
             float: accumulated penalty for missed lectures
         '''
-        return alpha*(1.5**self.missed_lec)
+        return alpha*(1.5**(self.maxl-x[1]))
 
     def _avg(self, x: np.array):
         """
         Returns:
             float: grade average. MINF < average < MAXF
         """
-        return self.minf+self._missed_lec_penalty()+self._study_reward(x)
-
+        return self.minf+3+self._missed_lec_penalty(x)+self._study_reward(x)*x[0]
 
     def _max_salary(self, x: np.array):
         """
@@ -113,7 +126,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
 class MaximumAverageObjective(TermGraduaterObjectiveFunction):
     '''Maximum average objective function'''
 
-    def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5, 
+    def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5,
                  td=96, salary=25, party_cost=-12.5, min_income=500,
                  avg_coeff=1, salary_coeff=1):
         super().__init__(dim, minf=minf, maxf=maxf, maxl=maxl,
@@ -122,6 +135,7 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
         self.name = 'MaximumAverageObjective'
         self.avg_coeff = avg_coeff
         self.salary_coeff = salary_coeff
+        self.min_income = min_income
 
     def evaluate(self, x) -> float:
         '''
