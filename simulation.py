@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pprint
 
 from ArtificialBeeColony import ABC
-from Objective import MaximumAverageObjective
+from objective import MaximumAverageObjective
 
 def read_data(data_file):
     try:

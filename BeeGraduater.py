@@ -4,8 +4,6 @@ from abc import ABC
 from copy import deepcopy
 import numpy as np
 
-
-
 class BaseGraduaterBee(ABC):
     '''Base bee class'''
 

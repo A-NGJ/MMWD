@@ -22,17 +22,6 @@ class ObjectiveFunction(ABC):
         self.maxl = maxl
         self.td = td
 
-    def __evaluate_sample(self, x):
-        if x[0] > 60:
-            return False
-        if x[1] > 9:
-            return False
-        if x[2] > 60:
-            return False
-        if x[3] > 60:
-            return False
-        return True
-
     def sample(self):
         '''
         Returns:
@@ -45,12 +34,10 @@ class ObjectiveFunction(ABC):
         Returns:
             np.array: sample values calculated using custom method.
         '''
-        while True:
-            sample = np.repeat(self.minf, repeats=self.dim) \
-                + np.random.uniform(low=0, high=1, size=self.dim) *\
-                np.repeat(self.maxf-self.minf, repeats=self.dim)
-            if sum(sample) < 96 and self.__evaluate_sample(sample):
-                return sample
+        sample = np.repeat(self.minf, repeats=self.dim) \
+            + np.random.uniform(low=0, high=1, size=self.dim) *\
+            np.repeat(self.maxf-self.minf, repeats=self.dim)
+        return sample
 
     @abstractmethod
     def evaluate(self, x):
