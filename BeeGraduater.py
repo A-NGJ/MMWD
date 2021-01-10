@@ -57,6 +57,10 @@ class BaseGraduaterBee(ABC):
         if self.trial >= max_trials:
             self.__reset_bee()
 
+    def force_reset_bee(self):
+        '''Resets bee regardless of its state'''
+        self.__reset_bee()
+
     def __reset_bee(self):
         self.pos = self.obj_function.custom_sample()
         self.fitness = self.obj_function.evaluate(self.pos)

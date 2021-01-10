@@ -10,12 +10,13 @@
     "party_cost": -12.5,
     "min_income": 500,
     "avg_coeff": 100,
-    "salary_coeff": 0.05
+    "salary_coeff": 0.05,
+    "max_iter": 100
   },
   "simulation_params":
   {
     "colony_size": 4,
-    "n_iter": 50,
+    "n_iter": 5000,
     "max_trials": 100,
     "simulations": 1
   }

@@ -14,13 +14,14 @@ class ObjectiveFunction(ABC):
         maxf (float): maximum value
     '''
 
-    def __init__(self, name, dim, minf, maxf, maxl, td):
+    def __init__(self, name, dim, minf, maxf, maxl, td, max_iter):
         self.name = name
         self.dim = dim
         self.minf = minf
         self.maxf = maxf
         self.maxl = maxl
         self.td = td
+        self.max_iter = max_iter
 
     def sample(self):
         '''
@@ -50,10 +51,10 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
     Inherits from objective function
     '''
 
-    def __init__(self, dim, *, minf, maxf, maxl, ts_lab, td, salary, party_cost, min_income):
+    def __init__(self, dim, *, minf, maxf, maxl, ts_lab, td, salary, max_iter):
         super().__init__(
             'TermGraduaterObjectiveFunction',
-            dim, minf, maxf, maxl, td)
+            dim, minf, maxf, maxl, td, max_iter)
 
         self.td = td
         self.ts_lab = ts_lab
@@ -115,10 +116,10 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
 
     def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5,
                  td=96, salary=25, party_cost=-12.5, min_income=500,
-                 avg_coeff=1, salary_coeff=1):
+                 avg_coeff=1, salary_coeff=1, max_iter=50):
         super().__init__(dim, minf=minf, maxf=maxf, maxl=maxl,
                          ts_lab=ts_lab, td=td, salary=salary,
-                         party_cost=party_cost, min_income=min_income)
+                         max_iter=max_iter)
         self.name = 'MaximumAverageObjective'
         self.avg_coeff = avg_coeff
         self.salary_coeff = salary_coeff
