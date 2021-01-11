@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pprint
 
+from itertools import product
+
 from ArtificialBeeColony import ABC
 from objective import MaximumAverageObjective
 
@@ -32,6 +34,27 @@ def simulate(obj_function, obj_function_params, colony_size=30, n_iter=5000, max
     plt.plot(np.linspace(0, n_iter-1, num=n_iter, dtype=int), values, lw=0.5, label='overall', color='b')
     plt.legend(loc='upper right')
 
+def tune(tuned_parameters, args):
+    file_parameters = read_data(args.file)
+    print(f"FILE PARAMETERS: {file_parameters}")
+
+    def _iter():
+        for p in tuned_parameters:
+            items = sorted(p.items())
+            keys, values = zip(*items)
+            for v in product(*values):
+                params = dict(zip(keys, v))
+                yield params
+
+    for parameters_set in _iter():
+        print(parameters_set)
+        objective_parameters = file_parameters["objective_params"]
+        objective_parameters.update(parameters_set)
+        print("RUNNING TUNING"
+               "PARAMETERS:"
+               f"{objective_parameters}")
+
+
 def main(parser_args):
     params = read_data(parser_args.file)
     plt.figure(figsize=(10, 7))
@@ -40,6 +63,21 @@ def main(parser_args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('file', help='Json file with initial params')
+    subparsers = parser.add_subparsers(dest="command")
+    run_parser = subparsers.add_parser("run")
+    run_parser.add_argument('file', help='Json file with initial params')
+    tune_parser = subparsers.add_parser("tune")
+    tune_parser.add_argument('file', help='Json file with initial params')
     args = parser.parse_args()
-    main(args)
+
+    if args.command == "run":
+        main(args)
+    elif args.command == "tune":
+
+        parameters = [
+            {"avg_coeff": np.arange(10, 101, step=10),
+             "salary_coeff": [0.05, 0.5, 0.75, 1],
+             "free_time_coeff": np.arange(1, 11)}
+        ]
+
+        tune(parameters, args)
