@@ -59,7 +59,12 @@ class ABC(object):
     def __reset_bees(self):
         self.optimal_solution_iter = 0
         list(map(lambda bee: bee.force_reset_bee(), self.employee_bees + self.onlokeer_bees))
-        self.optimal_solution = np.random.choice(self.employee_bees + self.onlokeer_bees)
+        while True:
+            possible_solution = np.random.choice(self.employee_bees + self.onlokeer_bees)
+            if sum(possible_solution.pos) < self.obj_function.td:
+                self.optimal_solution = possible_solution
+                return
+
 
     def __employee_bees_phase(self):
         list(map(lambda bee: bee.explore(self.max_trials), self.employee_bees))

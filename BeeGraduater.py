@@ -45,7 +45,7 @@ class BaseGraduaterBee(ABC):
             pos (np.array)
             fitness (float): objective function value
         '''
-        if fitness >= self.fitness:
+        if fitness >= self.fitness and sum(pos) < self.obj_function.td:
             self.pos = pos
             self.fitness = fitness
             self.trial = 0
@@ -104,7 +104,7 @@ class OnlookerGradueterBee(BaseGraduaterBee):
             n_pos = self.evaluate_boundaries(n_pos)
             n_fitness = self.obj_function.evaluate(n_pos)
 
-            if n_fitness >= fitness:
+            if n_fitness >= fitness and sum(n_pos) < self.obj_function.td:
                 self.pos = n_pos
                 self.fitness = n_fitness
                 self.trial = 0
