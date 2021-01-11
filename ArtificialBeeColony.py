@@ -33,16 +33,19 @@ class ABC(object):
                 key=lambda bee: bee.fitness)
         if iter_ == 1:
             self.prev_optimal_solution = self.optimal_solution
+
         if not self.optimal_solution:
             self.optimal_solution = deepcopy(n_optimal_solution)
         else:
             if np.array_equal(self.prev_optimal_solution.pos, self.optimal_solution.pos):
                 self.optimal_solution_iter += 1
+
             if (self.optimal_solution_iter == self.obj_function.max_iter) and \
                ((self.n_iter -  iter_) / self.n_iter) > 0.1:
                 self.__reset_bees()
-            elif n_optimal_solution.fitness > self.optimal_solution.fitness:
+            elif (n_optimal_solution.fitness > self.optimal_solution.fitness) and (sum(n_optimal_solution.pos) < self.obj_function.td):
                 self.optimal_solution = deepcopy(n_optimal_solution)
+                
         self.prev_optimal_solution = deepcopy(self.optimal_solution)
 
     def __initialize_employees(self):
@@ -100,4 +103,4 @@ class ABC(object):
             self.__update_optimality_tracking()
             print(self.optimal_solution.pos)
             print("iter: {} = cost: {}"
-                  .format(itr, "%04.03e" % self.optimal_solution.fitness))
+                  .format(itr, self.optimal_solution.fitness))

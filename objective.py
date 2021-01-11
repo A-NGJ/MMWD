@@ -23,6 +23,11 @@ class ObjectiveFunction(ABC):
         self.td = td
         self.max_iter = max_iter
 
+    def __evaluate(self, sample):
+        if sum(sample) < self.td:
+            return True
+        return False
+
     def sample(self):
         '''
         Returns:
@@ -35,10 +40,13 @@ class ObjectiveFunction(ABC):
         Returns:
             np.array: sample values calculated using custom method.
         '''
-        sample = np.repeat(self.minf, repeats=self.dim) \
-            + np.random.uniform(low=0, high=1, size=self.dim) *\
-            np.repeat(self.maxf-self.minf, repeats=self.dim)
-        return sample
+        while True:
+            sample = np.repeat(self.minf, repeats=self.dim) \
+                + np.random.uniform(low=0, high=1, size=self.dim) *\
+                np.repeat(self.maxf-self.minf, repeats=self.dim)
+            sample = np.array([int(elem) for elem in sample])
+            if self.__evaluate(sample):
+                return sample
 
     @abstractmethod
     def evaluate(self, x):
@@ -51,7 +59,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
     Inherits from objective function
     '''
 
-    def __init__(self, dim, *, minf, maxf, maxl, ts_lab, td, salary, max_iter):
+    def __init__(self, dim, *, minf, maxf, maxl, ts_lab, td, salary, party_cost, max_iter):
         super().__init__(
             'TermGraduaterObjectiveFunction',
             dim, minf, maxf, maxl, td, max_iter)
@@ -59,6 +67,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         self.td = td
         self.ts_lab = ts_lab
         self.salary = salary
+        self.party_cost = party_cost
 
     def free_time(self, x: np.array):
         '''
@@ -66,6 +75,13 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
             float: remaining free time
         '''
         return self.td-(x[1]+self.ts_lab)-x[0]-x[2]-x[3]
+
+    def _salary(self, x: np.array):
+        '''
+        Returns:
+            float: Funds left after a week
+        '''
+        return x[2]*self.salary + x[3]*self.party_cost
 
     def _satisfaction_coeff(self, x: np.array, alpha=0.008):
         '''
@@ -116,13 +132,14 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
 
     def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5,
                  td=96, salary=25, party_cost=-12.5, min_income=500,
-                 avg_coeff=1, salary_coeff=1, max_iter=50):
+                 avg_coeff=1, salary_coeff=1, free_time_coeff=1, max_iter=50):
         super().__init__(dim, minf=minf, maxf=maxf, maxl=maxl,
                          ts_lab=ts_lab, td=td, salary=salary,
-                         max_iter=max_iter)
+                         party_cost=party_cost, max_iter=max_iter)
         self.name = 'MaximumAverageObjective'
         self.avg_coeff = avg_coeff
         self.salary_coeff = salary_coeff
+        self.free_time_coeff = free_time_coeff
         self.min_income = min_income
 
     def evaluate(self, x) -> float:
@@ -137,16 +154,4 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
             Objective function value
         '''
 
-        return self.avg_coeff*self._avg(x)+self.free_time(x)+self.salary_coeff*x[2]*self.salary
-
-    # coeB = 'jakas liczba'
-    # coeA = 'jakas liczba'
-
-    # def __init__(self, AVG, Tw, P, I):
-    #     self.AVG = AVG
-    #     self.Tw = Tw
-    #     self.P = P
-    #     self.I = I
-
-    # def objective_function(self):
-    #     return (self.coeB*self.AVG + self.Tw + self.coeA*self.P)
+        return self.avg_coeff*self._avg(x)+self.free_time_coeff*self.free_time(x)+self.salary_coeff*(self._salary(x))
