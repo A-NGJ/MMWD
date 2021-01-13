@@ -17,8 +17,8 @@
   "simulation_params":
   {
     "colony_size": 4,
-    "n_iter": 5000,
-    "max_trials": 500,
+    "n_iter": 500,
+    "max_trials": 50,
     "simulations": 1
   }
 }

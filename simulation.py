@@ -46,14 +46,26 @@ def tune(tuned_parameters, args):
                 params = dict(zip(keys, v))
                 yield params
 
+    max_fitness = 0
     for parameters_set in _iter():
-        print(parameters_set)
         objective_parameters = file_parameters["objective_params"]
         objective_parameters.update(parameters_set)
-        print("RUNNING TUNING"
-               "PARAMETERS:"
+        print("RUNNING TUNING WITH PARAMETERS:"
                f"{objective_parameters}")
+        optimizer = ABC(
+            MaximumAverageObjective(4, **objective_parameters),
+            colony_size=file_parameters['simulation_params']['colony_size'],
+            n_iter=file_parameters['simulation_params']['n_iter'],
+            max_trials=file_parameters['simulation_params']['max_trials'],
+            suppress_output=True)
+        fitness, x = optimizer.optimize()
+        print(f"OUTPUT FITNESS: {fitness}")
+        if fitness > max_fitness:
+            max_params = parameters_set
+            max_fitness = fitness
+            max_x = x
 
+    return max_params, max_fitness, max_x
 
 def main(parser_args):
     params = read_data(parser_args.file)
@@ -80,4 +92,5 @@ if __name__ == "__main__":
              "free_time_coeff": np.arange(1, 11)}
         ]
 
-        tune(parameters, args)
+        best_params, best_fitness, best_position = tune(parameters, args)
+        print(f"BEST_PARAMS: {best_params} FOR FITNESS {best_fitness} WITH POSITION {best_position}")

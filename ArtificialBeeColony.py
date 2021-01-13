@@ -5,7 +5,7 @@ from BeeGraduater import EmployeeGraduaterBee, OnlookerGradueterBee
 
 class ABC(object):
 
-    def __init__(self, obj_function, colony_size=30, n_iter=5000, max_trials=100):
+    def __init__(self, obj_function, colony_size=30, n_iter=5000, max_trials=100, suppress_output=False):
         self.colony_size = colony_size
         self.obj_function = obj_function
 
@@ -19,6 +19,8 @@ class ABC(object):
 
         self.employee_bees = []
         self.onlokeer_bees = []
+
+        self.suppress_output = suppress_output
 
     def __reset_algorithm(self):
         self.optimal_solution = None
@@ -106,6 +108,8 @@ class ABC(object):
 
             self.__update_optimal_solution(itr)
             self.__update_optimality_tracking()
-            print(self.optimal_solution.pos)
-            print("iter: {} = cost: {}"
-                  .format(itr, self.optimal_solution.fitness))
+            if not self.suppress_output:
+                print(self.optimal_solution.pos)
+                print("iter: {} = cost: {}"
+                    .format(itr, self.optimal_solution.fitness))
+        return self.optimal_solution.fitness, self.optimal_solution.pos
