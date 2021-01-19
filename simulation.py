@@ -100,7 +100,6 @@ class Simulator:
 
         return self.return_dict["max_params"], self.return_dict["max_fitness"], self.return_dict["max_x"]
 
-
     def run(self):
         params = self._read_data()
         plt.figure(figsize=(10, 7))
