@@ -74,21 +74,34 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: remaining free time
         '''
-        return self.td-(x[1]+self.ts_lab)-x[0]-x[2]-x[3]
+        return self.td-(x[1]+self.ts_lab)-x[0]-sum(x[2:])
 
     def _salary(self, x: np.array):
         '''
         Returns:
             float: Funds left after a week
         '''
-        return x[2]*self.salary + x[3]*self.party_cost
+        return x[2]*self.salary +\
+               x[3]*self.party_cost +\
+               x[4]*5 +\
+               x[7]*1 +\
+               x[13]*-23 +\
+               x[15]*3 +\
+               x[18]*-33 +\
+               x[22]*12 +\
+               x[25]*-75 +\
+               x[-1]*66
 
     def _satisfaction_coeff(self, x: np.array, alpha=0.008):
         '''
         Returns:
             float: satisfaction coefficient
         '''
-        return (self.free_time(x) + 3*x[3])*alpha
+        return (self.free_time(x) +\
+                3*x[3] +\
+                12*x[7] +\
+                5*x[10] +\
+                8*x[16])*alpha
 
     def _study_reward(self, x: np.array, alpha=0.1429):
         '''

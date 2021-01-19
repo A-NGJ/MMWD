@@ -36,7 +36,7 @@ class Simulator:
         values = np.zeros(n_iter)
         for _ in range(simulations):
             optimizer = ABC(
-                obj_function(4, **obj_function_params),
+                obj_function(30, **obj_function_params),
                 colony_size=colony_size,
                 n_iter=n_iter,
                 max_trials=max_trials
@@ -63,7 +63,7 @@ class Simulator:
         # print("RUNNING TUNING WITH PARAMETERS:"
         #     f"{objective_parameters}")
         optimizer = ABC(
-            MaximumAverageObjective(4, **objective_parameters),
+            MaximumAverageObjective(6, **objective_parameters),
             colony_size=self.file_parameters['simulation_params']['colony_size'],
             n_iter=self.file_parameters['simulation_params']['n_iter'],
             max_trials=self.file_parameters['simulation_params']['max_trials'],
@@ -105,6 +105,7 @@ class Simulator:
         plt.figure(figsize=(10, 7))
         self._simulate(MaximumAverageObjective, params['objective_params'], **params['simulation_params'])
         plt.show()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
