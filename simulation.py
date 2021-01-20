@@ -13,7 +13,7 @@ from objective import MaximumAverageObjective
 
 class Simulator:
 
-    max_fitness = 0
+    min_std = np.inf
     max_params = None
     max_x = None
 
@@ -63,21 +63,20 @@ class Simulator:
         # print("RUNNING TUNING WITH PARAMETERS:"
         #     f"{objective_parameters}")
         optimizer = ABC(
-            MaximumAverageObjective(6, **objective_parameters),
+            MaximumAverageObjective(30, **objective_parameters),
             colony_size=self.file_parameters['simulation_params']['colony_size'],
             n_iter=self.file_parameters['simulation_params']['n_iter'],
             max_trials=self.file_parameters['simulation_params']['max_trials'],
             suppress_output=True)
-        fitness, x = optimizer.optimize()
-        # print(f"OUTPUT FITNESS: {fitness}")
-        if fitness > self.max_fitness:
+        _, x, std = optimizer.optimize()
+        print(f"OUTPUT STD: {std}")
+        if std < self.min_std:
             self.max_params = parameters_set
-            self.max_fitness = fitness
+            self.min_std = std
             self.max_x = x
 
-            print(f"{self.max_params} {self.max_fitness} {self.max_x}")
             self.return_dict["max_params"] = self.max_params
-            self.return_dict["max_fitness"] = self.max_fitness
+            self.return_dict["min_std"] = self.min_std
             self.return_dict["max_x"] = self.max_x
 
     def tune(self, tune_parameters):
@@ -98,7 +97,7 @@ class Simulator:
         with multiprocessing.Pool(processes=processes) as pool:
             pool.map(self._tune_process, self._iter(tune_parameters))
 
-        return self.return_dict["max_params"], self.return_dict["max_fitness"], self.return_dict["max_x"]
+        return self.return_dict["max_params"], self.return_dict["min_std"], self.return_dict["max_x"]
 
     def run(self):
         params = self._read_data()
@@ -129,5 +128,5 @@ if __name__ == "__main__":
              "free_time_coeff": np.arange(1, 11)}
         ]
 
-        best_params, best_fitness, best_position = simulator.tune(parameters)
-        print(f"BEST_PARAMS: {best_params} FOR FITNESS {best_fitness} WITH POSITION {best_position}")
+        best_params, best_std, best_position = simulator.tune(parameters)
+        print(f"BEST_PARAMS: {best_params} FOR STD {best_std} WITH POSITION {best_position}")

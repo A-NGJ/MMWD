@@ -112,4 +112,4 @@ class ABC(object):
                 print(self.optimal_solution.pos)
                 print("iter: {} = cost: {}"
                     .format(itr, self.optimal_solution.fitness))
-        return self.optimal_solution.fitness, self.optimal_solution.pos
+        return self.optimal_solution.fitness, self.optimal_solution.pos, self.optimal_solution.std

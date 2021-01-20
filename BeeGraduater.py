@@ -16,7 +16,7 @@ class BaseGraduaterBee(ABC):
         self.minf = obj_function.minf
         self.maxf = obj_function.maxf
         self.maxl = obj_function.maxl
-        self.fitness = obj_function.evaluate(self.pos)
+        self.fitness, self.std = obj_function.evaluate(self.pos)
         self.trial = BaseGraduaterBee.TRIAL_INITIAL_DEFAULT_VALUE
         self.prob = BaseGraduaterBee.INTIAL_DEFAULT_PROBABILITY
 
@@ -38,7 +38,7 @@ class BaseGraduaterBee(ABC):
             pos[3] = maxw
         return pos
 
-    def update_bee(self, pos, fitness):
+    def update_bee(self, pos, fitness, std):
         '''
         Updates bee fitness
         Args:
@@ -49,6 +49,7 @@ class BaseGraduaterBee(ABC):
             self.pos = pos
             self.fitness = fitness
             self.trial = 0
+            self.std = std
         else:
             self.trial += 1
 
@@ -63,7 +64,7 @@ class BaseGraduaterBee(ABC):
 
     def __reset_bee(self):
         self.pos = self.obj_function.custom_sample()
-        self.fitness = self.obj_function.evaluate(self.pos)
+        self.fitness, self.std = self.obj_function.evaluate(self.pos)
         self.trial = BaseGraduaterBee.TRIAL_INITIAL_DEFAULT_VALUE
         self.prob = BaseGraduaterBee.TRIAL_INITIAL_DEFAULT_VALUE
 
@@ -78,8 +79,8 @@ class EmployeeGraduaterBee(BaseGraduaterBee):
             phi = [int(elem) for elem in np.random.uniform(low=-10, high=10, size=len(self.pos))]
             n_pos = self.pos + (self.pos - component) * phi
             n_pos = self.evaluate_boundaries(n_pos)
-            n_fitness = self.obj_function.evaluate(n_pos)
-            self.update_bee(n_pos, n_fitness)
+            n_fitness, n_std = self.obj_function.evaluate(n_pos)
+            self.update_bee(n_pos, n_fitness, n_std)
 
     def get_fitness(self):
         return self.fitness*1000
@@ -102,11 +103,12 @@ class OnlookerGradueterBee(BaseGraduaterBee):
             phi = [int(elem) for elem in np.random.uniform(low=-10, high=-10, size=len(candidate))]
             n_pos = candidate + (candidate - component) * phi
             n_pos = self.evaluate_boundaries(n_pos)
-            n_fitness = self.obj_function.evaluate(n_pos)
+            n_fitness, n_std = self.obj_function.evaluate(n_pos)
 
             if n_fitness >= fitness and sum(n_pos) < self.obj_function.td:
                 self.pos = n_pos
                 self.fitness = n_fitness
                 self.trial = 0
+                self.std = n_std
             else:
                 self.trial += 1

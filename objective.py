@@ -167,4 +167,5 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
             Objective function value
         '''
 
-        return self.avg_coeff*self._avg(x)+self.free_time_coeff*self.free_time(x)+self.salary_coeff*(self._salary(x))
+        return self.avg_coeff*self._avg(x)+self.free_time_coeff*self.free_time(x)+self.salary_coeff*(self._salary(x)),\
+               np.std(np.array([self.avg_coeff*self._avg(x), self.free_time_coeff*self.free_time(x), self.salary_coeff*(self._salary(x))]))
