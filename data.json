@@ -2,7 +2,7 @@
   "objective_params":
   {
     "minf": 0,
-    "maxf": 60,
+    "maxf": 30,
     "maxl": 9,
     "ts_lab": 11.5,
     "td": 650,
