@@ -149,7 +149,8 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
 
     def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5,
                  td=96, salary=25, party_cost=-12.5, min_income=500,
-                 avg_coeff=1, salary_coeff=1, free_time_coeff=1, max_iter=50):
+                 avg_coeff=1, salary_coeff=1, free_time_coeff=1, 
+                 coeff1=1, coeff2=2, coeff3=-3, max_iter=50):
         super().__init__(dim, minf=minf, maxf=maxf, maxl=maxl,
                          ts_lab=ts_lab, td=td, salary=salary,
                          party_cost=party_cost, max_iter=max_iter)
@@ -157,6 +158,9 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
         self.avg_coeff = avg_coeff
         self.salary_coeff = salary_coeff
         self.free_time_coeff = free_time_coeff
+        self.coeff1 = coeff1
+        self.coeff2 = coeff2
+        self.coeff3 = coeff3
         self.min_income = min_income
 
     def evaluate(self, x) -> float:
@@ -171,5 +175,7 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
             Objective function value
         '''
 
-        return self.avg_coeff*self._avg(x)+self.free_time_coeff*self.free_time(x)+self.salary_coeff*(self._salary(x)),\
-               np.std(np.array([self.avg_coeff*self._avg(x), self.free_time_coeff*self.free_time(x), self.salary_coeff*(self._salary(x))]))
+        return self.avg_coeff*self._avg(x)+self.free_time_coeff*self.free_time(x)+self.salary_coeff*(self._salary(x))+\
+               self.coeff1*(sum(x[::3]))+self.coeff2*(sum(x[2:16]))+self.coeff3*(sum(x[::2])),\
+               np.std(np.array([self.avg_coeff*self._avg(x), self.free_time_coeff*self.free_time(x), self.salary_coeff*(self._salary(x)),\
+                      self.coeff1*(sum(x[::3])), self.coeff2*(sum(x[2:16])), self.coeff3*(sum(x[::2]))]))

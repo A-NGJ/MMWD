@@ -5,19 +5,19 @@
     "maxf": 30,
     "maxl": 9,
     "ts_lab": 11.5,
-    "td": 650,
+    "td": 330,
     "salary": 25,
     "party_cost": -12.5,
     "min_income": 500,
     "avg_coeff": 100,
     "salary_coeff": 5,
     "free_time_coeff": 1,
-    "max_iter": 500
+    "max_iter": 100
   },
   "simulation_params":
   {
-    "colony_size": 30,
-    "n_iter": 5000,
+    "colony_size": 4,
+    "n_iter": 500,
     "max_trials": 100,
     "simulations": 1
   }
