@@ -150,7 +150,7 @@ class MaximumAverageObjective(TermGraduaterObjectiveFunction):
     def __init__(self, dim, *, minf=0, maxf=60, maxl=9, ts_lab=11.5,
                  td=96, salary=25, party_cost=-12.5, min_income=500,
                  avg_coeff=1, salary_coeff=1, free_time_coeff=1, 
-                 coeff1=1, coeff2=2, coeff3=-3, max_iter=50):
+                 coeff1=1, coeff2=1, coeff3=1, max_iter=50):
         super().__init__(dim, minf=minf, maxf=maxf, maxl=maxl,
                          ts_lab=ts_lab, td=td, salary=salary,
                          party_cost=party_cost, max_iter=max_iter)
