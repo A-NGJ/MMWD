@@ -126,7 +126,7 @@ if __name__ == "__main__":
             {"avg_coeff": np.arange(10, 101, step=10),
              "salary_coeff": [0.05, 0.5, 0.75, 1],
              "free_time_coeff": np.arange(1, 11),
-             "coeff1": np.np.arange(1, 11),
+             "coeff1": np.arange(1, 11),
              "coeff2": np.arange(1, 11),
              "coeff3": np.arange(1, 11)}
         ]
