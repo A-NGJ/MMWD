@@ -69,6 +69,9 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         self.salary = salary
         self.party_cost = party_cost
 
+    def add_extra_variables(self, equation):
+        pass
+
     def free_time(self, x: np.array):
         '''
         Returns:
@@ -89,6 +92,7 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
                x[15]*3 +\
                x[18]*-33 +\
                x[22]*12 +\
+               x[28]*-28 +\
                x[25]*-75 +\
                x[-1]*66
 
@@ -101,7 +105,11 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
                 3*x[3] +\
                 12*x[7] +\
                 5*x[10] +\
-                8*x[16])*alpha
+                8*x[16] +\
+                4*x[20] +\
+                9*x[24] -\
+                87*x[17] +\
+                7*x[27])*alpha
 
     def _study_reward(self, x: np.array, alpha=0.1429):
         '''
@@ -119,14 +127,14 @@ class TermGraduaterObjectiveFunction(ObjectiveFunction):
         Returns:
             float: accumulated penalty for missed lectures
         '''
-        return alpha*(1.5**(self.maxl-x[1]))
+        return alpha*(1.5**(self.maxl-x[1]-x[7]*9-x[3]*4))
 
     def _avg(self, x: np.array):
         """
         Returns:
             float: grade average. MINF < average < MAXF
         """
-        return self.minf+3+self._missed_lec_penalty(x)+self._study_reward(x)*x[0]
+        return self.minf+3*x[10]+self._missed_lec_penalty(x)*x[20]+self._study_reward(x)*x[0]
 
     def _max_salary(self, x: np.array):
         """

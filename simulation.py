@@ -8,7 +8,7 @@ import pprint
 
 from itertools import product
 
-from ArtificialBeeColony import ABC
+from ArtificalBeeColony import ABC
 from objective import MaximumAverageObjective
 
 class Simulator:
