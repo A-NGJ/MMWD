@@ -29,7 +29,7 @@ class ABC(object):
     def __update_optimality_tracking(self):
         self.optimality_tracking.append(self.optimal_solution.fitness)
 
-    def __update_optimal_solution(self, iter_):
+    def __update_optimal_solution(self, iter_, compare_to_prev: bool):
         n_optimal_solution = \
             max(self.onlokeer_bees + self.employee_bees,
                 key=lambda bee: bee.fitness)
@@ -39,16 +39,21 @@ class ABC(object):
         if not self.optimal_solution:
             self.optimal_solution = deepcopy(n_optimal_solution)
         else:
-            if np.array_equal(self.prev_optimal_solution.pos, self.optimal_solution.pos):
-                self.optimal_solution_iter += 1
 
             if (self.optimal_solution_iter == self.obj_function.max_iter) and \
                ((self.n_iter -  iter_) / self.n_iter) > 0.1:
                 self.__reset_bees()
             elif (n_optimal_solution.fitness > self.optimal_solution.fitness) and (sum(n_optimal_solution.pos) < self.obj_function.td):
                 self.optimal_solution = deepcopy(n_optimal_solution)
-                
-        self.prev_optimal_solution = deepcopy(self.optimal_solution)
+
+            if compare_to_prev and iter_ > 0:
+
+                if np.array_equal(self.prev_optimal_solution.pos, self.optimal_solution.pos):
+                    self.optimal_solution_iter += 1
+                else:
+                    self.optimal_solution_iter = 0
+
+                self.prev_optimal_solution = deepcopy(self.optimal_solution)
 
     def __initialize_employees(self):
         for _ in range(self.colony_size // 2):
@@ -98,7 +103,7 @@ class ABC(object):
         self.__initialize_onlookers()
         for itr in range(self.n_iter):
             self.__employee_bees_phase()
-            self.__update_optimal_solution(itr)
+            self.__update_optimal_solution(itr, compare_to_prev=False)
 
             self.__calculate_probabilities()
             self.__select_best_food_sources()
@@ -106,7 +111,7 @@ class ABC(object):
             self.__onlooker_bees_phase()
             self.__scout_bees_phase()
 
-            self.__update_optimal_solution(itr)
+            self.__update_optimal_solution(itr, compare_to_prev=True)
             self.__update_optimality_tracking()
             if not self.suppress_output:
                 print(self.optimal_solution.pos)
