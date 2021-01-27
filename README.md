@@ -10,7 +10,7 @@ Autorzy:
 ## Użycie
 
 Program przyjmuje plik z parametrami wejściowymi w formacie JSON
-```json
+```python
 {
     "objective_params":
     {
