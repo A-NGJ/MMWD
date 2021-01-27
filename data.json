@@ -2,22 +2,25 @@
   "objective_params":
   {
     "minf": 0,
-    "maxf": 60,
+    "maxf": 30,
     "maxl": 9,
     "ts_lab": 11.5,
-    "td": 800,
+    "td": 330,
     "salary": 25,
     "party_cost": -12.5,
     "min_income": 500,
     "avg_coeff": 100,
-    "salary_coeff": 5,
-    "free_time_coeff": 1,
-    "max_iter": 100
+    "salary_coeff": 0.05,
+    "free_time_coeff": 3,
+    "coeff1": 3,
+    "coeff2": 1,
+    "coeff3": 3,
+    "max_iter": 500
   },
   "simulation_params":
   {
     "colony_size": 30,
-    "n_iter": 500,
+    "n_iter": 5000,
     "max_trials": 50,
     "simulations": 1
   }

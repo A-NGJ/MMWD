@@ -34,6 +34,7 @@ class Simulator:
     @staticmethod
     def _simulate(obj_function, obj_function_params, *, colony_size=30, n_iter=5000, max_trials=100, simulations=30):
         values = np.zeros(n_iter)
+        fitnesses = []
         for _ in range(simulations):
             optimizer = ABC(
                 obj_function(30, **obj_function_params),
@@ -41,12 +42,21 @@ class Simulator:
                 n_iter=n_iter,
                 max_trials=max_trials
                 )
-            optimizer.optimize()
+            fitness, _, _ = optimizer.optimize()
+            fitnesses.append(fitness)
             values += np.array(optimizer.optimality_tracking)
         values /= simulations
+        std = np.std(fitnesses)
 
-        plt.plot(np.linspace(0, n_iter-1, num=n_iter, dtype=int), values, lw=0.5, label='overall', color='b')
-        plt.legend(loc='upper right')
+        if simulations > 1:
+            plt.figure(1, figsize=(10, 7))
+            plt.scatter(np.linspace(0, simulations-1, num=simulations, dtype=int), fitnesses, lw=0.5)
+            plt.title(f"Fitness across {simulations} simulations with standard deviation $\sigma$={std}")
+        plt.figure(2, figsize=(10, 7))
+        plt.plot(np.linspace(0, n_iter-1, num=n_iter, dtype=int), values, lw=0.5, color='b')
+        plt.xlabel("Iteration")
+        plt.ylabel("Fitness")
+        plt.title(f"Colony size: {colony_size}, Number of iterations {n_iter}, maximum trials: {max_trials}")
 
     @staticmethod
     def _iter(tune_parameters):
@@ -101,7 +111,6 @@ class Simulator:
 
     def run(self):
         params = self._read_data()
-        plt.figure(figsize=(10, 7))
         self._simulate(MaximumAverageObjective, params['objective_params'], **params['simulation_params'])
         plt.show()
 
@@ -113,7 +122,7 @@ if __name__ == "__main__":
     run_parser.add_argument('file', help='Json file with initial params')
     tune_parser = subparsers.add_parser("tune")
     tune_parser.add_argument('file', help='Json file with initial params')
-    tune_parser.add_argument('--cpu', '-c', default=1, type=int, help="Numver of cpu's used, if -1 passed all available are used")
+    tune_parser.add_argument('--cpu', '-c', default=1, type=int, help="Number of cpu's used, if -1 passed all available are used")
     args = parser.parse_args()
 
     simulator = Simulator(args)
@@ -123,9 +132,12 @@ if __name__ == "__main__":
     elif args.command == "tune":
 
         parameters = [
-            {"avg_coeff": np.arange(10, 101, step=10),
+            {"avg_coeff": np.arange(50, 101, step=10),
              "salary_coeff": [0.05, 0.5, 0.75, 1],
-             "free_time_coeff": np.arange(1, 11)}
+             "free_time_coeff": np.arange(1, 5),
+             "coeff1": np.arange(1, 5),
+             "coeff2": np.arange(1, 5),
+             "coeff3": np.arange(1, 5)}
         ]
 
         best_params, best_std, best_position = simulator.tune(parameters)

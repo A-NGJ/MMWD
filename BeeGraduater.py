@@ -76,15 +76,15 @@ class EmployeeGraduaterBee(BaseGraduaterBee):
         '''Explores surroundings of current position in search of food'''
         if self.trial <= max_trials:
             component = np.random.choice(self.pos)
-            phi = [int(elem) for elem in np.random.uniform(low=-10, high=10, size=len(self.pos))]
+            phi = [int(elem) for elem in np.random.uniform(low=-2.5, high=2.5, size=len(self.pos))]
             n_pos = self.pos + (self.pos - component) * phi
             n_pos = self.evaluate_boundaries(n_pos)
             n_fitness, n_std = self.obj_function.evaluate(n_pos)
             self.update_bee(n_pos, n_fitness, n_std)
 
     def get_fitness(self):
-        return self.fitness*1000
-    
+        return self.fitness*10
+
     def compute_prob(self, max_fitness):
         self.prob = self.get_fitness() / max_fitness
 
@@ -100,7 +100,7 @@ class OnlookerGradueterBee(BaseGraduaterBee):
     def __exploit(self, candidate, fitness, max_trials):
         if self.trial <= max_trials:
             component = np.random.choice(candidate)
-            phi = [int(elem) for elem in np.random.uniform(low=-10, high=-10, size=len(candidate))]
+            phi = [int(elem) for elem in np.random.uniform(low=-2.5, high=-2.5, size=len(candidate))]
             n_pos = candidate + (candidate - component) * phi
             n_pos = self.evaluate_boundaries(n_pos)
             n_fitness, n_std = self.obj_function.evaluate(n_pos)
